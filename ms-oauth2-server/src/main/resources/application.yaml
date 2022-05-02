@@ -1,0 +1,71 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: ms-oauth2-server
+
+  # 数据库datasource
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: wx19930908
+    url: jdbc:mysql://localhost:3306/dinners-social?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT&allowPublicKeyRetrieval=true
+  # redis
+  redis:
+    password: 123123
+    timeout: 3000
+    lettuce:
+      pool:
+        max-active: 8 # 最大连接数，默认 8
+        max-idle: 8 # 最大空闲连接，默认 8
+        min-idle: 0 # 最小空闲连接，默认 0
+        max-wait: 1000 # 最大连接阻塞等待时间，单位毫秒，默认 -1
+    # 集群
+    cluster:
+      nodes: 192.168.160.130:6371,192.168.160.130:6372,192.168.160.131:6373,192.168.160.131:6374,192.168.1160.132:6375,192.168.160.132:6376
+      max-redirects: 5 # Redis命令执行时最多转发次数
+
+  swagger:
+    base-package: com.imooc.oauth2
+    title: 慕课美食社交食客API接口文档
+# 加载进配置文件中
+client:
+  oauth2:
+    client-id: appId
+    secret: 123456   # 客户端安全码
+    # 授权类型
+    grant_types:
+      - password
+      - refresh_token
+    token-validity-time: 2592000
+    refresh-token-validity-time: 2592000
+    scopes:
+      - api
+      - all
+
+
+# 配置 Eureka Server 注册中心
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://localhost:8080/eureka/
+
+# Mybatis
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true # 开启驼峰映射
+
+# 指标监控健康检查
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # 暴露的端点
+
+logging:
+  pattern:
+    console: '%d{HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
